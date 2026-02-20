@@ -16,12 +16,12 @@ namespace Defr\QRPlatba;
 use DateTime;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelMedium;
-use Endroid\QrCode\Label\Alignment\LabelAlignmentLeft;
+use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\Label\Font\OpenSans;
 use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\Label\LabelAlignment;
 use Endroid\QrCode\QrCode;
-use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeEnlarge;
+use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\SvgWriter;
 use Iban\Validation\Iban;
@@ -721,14 +721,16 @@ class QRPlatba
      */
     public function getQRCodeInstance(int $size = 300, int $margin = 10): QrCode
     {
-        return QrCode::create((string) $this)
-            ->setSize($size - ($margin * 2))
-            ->setEncoding(new Encoding('UTF-8'))
-            ->setErrorCorrectionLevel(new ErrorCorrectionLevelMedium())
-            ->setMargin($margin)
-            ->setRoundBlockSizeMode(new RoundBlockSizeModeEnlarge())
-            ->setForegroundColor(new Color(0, 0, 0, 0))
-            ->setBackgroundColor(new Color(255, 255, 255, 0));
+        return new QrCode(
+            data: (string) $this,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+            size: $size - ($margin * 2),
+            margin: $margin,
+            roundBlockSizeMode: RoundBlockSizeMode::Enlarge,
+            foregroundColor: new Color(0, 0, 0),
+            backgroundColor: new Color(255, 255, 255),
+        );
     }
 
     /**
@@ -799,10 +801,12 @@ class QRPlatba
     private function getLabelInstance(): ?Label
     {
         if ($this->label !== null) {
-            return Label::create($this->label)
-                ->setAlignment(new LabelAlignmentLeft())
-                ->setFont(new OpenSans())
-                ->setTextColor(new Color(0, 0, 0, 0));
+            return new Label(
+                text: $this->label,
+                font: new OpenSans(),
+                alignment: LabelAlignment::Left,
+                textColor: new Color(0, 0, 0),
+            );
         }
 
         return null;
